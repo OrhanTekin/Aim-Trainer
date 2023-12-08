@@ -19,6 +19,7 @@ let time = 0,
     accuracy=0,
     interval,
     circleInterval,
+    spawnInterval,
     health=3;
 
 
@@ -35,12 +36,19 @@ function startGame(){
     }
     playing = true;
     interval= setInterval(increaseTime, 1000);
-    circleInterval = setInterval(createRandomCircle, 500-(time*7));
-    createRandomCircle();
+    changeSpawnRate();
+    spawnInterval = setInterval(changeSpawnRate, 5000);
 }
+
+function changeSpawnRate(){
+    clearInterval(circleInterval);
+    circleInterval = setInterval(createRandomCircle, 500-(time*7));
+}
+
 
 function increaseTime(){
     ++time;
+
     let minutes = Math.floor(time / 60 );
     let seconds = Math.floor(time % 60);
 
