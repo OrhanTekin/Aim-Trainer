@@ -35,7 +35,7 @@ function startGame(){
     }
     playing = true;
     interval= setInterval(increaseTime, 1000);
-    circleInterval = setInterval(createRandomCircle, 500-time);
+    circleInterval = setInterval(createRandomCircle, 500-(time*7));
     createRandomCircle();
 }
 
