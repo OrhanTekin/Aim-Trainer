@@ -29,6 +29,7 @@ let time = 0,
 startBtn.addEventListener("click", () => {
     screens[0].classList.add("up");
     setup();
+    startGame();
 });
 
 
@@ -102,7 +103,6 @@ function setup(){
         speaker.classList.add("mute");
     }
 
-    startGame();
 }
 
 
@@ -241,3 +241,10 @@ function reset(){
 
 
 
+function check(){
+    if(window.performance.getEntriesByType('navigation')[0].type == 'reload'){
+        screens[0].classList.add("up");
+        screens[1].classList.add("up");
+        setup();
+    }
+}
