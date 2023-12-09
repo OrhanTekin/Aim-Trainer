@@ -10,7 +10,8 @@ const startBtn = document.querySelector("#start"),
     healthEl = document.querySelector("#health"),
     restartBtn = document.querySelector("#restart"),
     fullScreenBtn = document.querySelector("#fullscreen"),
-    highscoreEl = document.querySelector("#highscore");
+    highscoreEl = document.querySelector("#highscore"),
+    speaker = document.querySelector("#speaker");
 
 let time = 0,
     playing=false,
@@ -20,20 +21,93 @@ let time = 0,
     interval,
     circleInterval,
     spawnInterval,
-    health=3;
+    health=3,
+    audio,
+    toogleMute;
 
 
 startBtn.addEventListener("click", () => {
     screens[0].classList.add("up");
-    startGame();
+    setup();
 });
 
 
-function startGame(){
+function setup(){
+    //restart button
+    restartBtn.addEventListener("click", restartGame);
+    
+
+    //event on circle click
+    board.addEventListener("mousedown", (e) =>{
+        if(e.target.classList.contains("circle")){
+            //increase hits by one and remove circle
+            hits++;
+            e.target.remove();
+            if(!toogleMute){
+                audio.play();
+            }
+            
+        }else{
+            //missed circle
+            missed++;
+        }
+
+        //update hits on stats
+        hitsEl.innerHTML = hits;
+        calculateAccuracy();
+    });
+
+
+    //fullscreen
+    fullScreenBtn.addEventListener("click", () => {
+        if(elem.requestFullscreen){
+            elem.requestFullscreen();  
+        }
+        //hide fullscreen button
+        fullScreenBtn.style.display = "none";
+    });
+
+    let elem = document.documentElement;
+
+    document.addEventListener("fullscreenchange", () => {
+        if(!document.fullscreenElement){
+            fullScreenBtn.style.display = "block";
+        }
+    });
+
+    //sound
+    speaker.addEventListener("click", () => {
+        if(!toogleMute){
+            speaker.classList.add("mute");
+            toogleMute = true;
+        }else if(toogleMute){
+            speaker.classList.remove("mute");
+            toogleMute = false;
+        }
+        localStorage.clear("toogleMute");
+        localStorage.setItem("toogleMute", toogleMute);
+
+        
+    });
+
+    //load highscore
     const highscore = localStorage.getItem("myHighscore");
     if(highscore != null){
         highscoreEl.innerHTML = highscore;
     }
+    //load audio and settings
+    audio = new Audio('hitSound.mp3');
+    toogleMute = localStorage.getItem("toogleMute");
+
+
+    startGame();
+}
+
+
+function startGame(){
+   
+
+    //start game
     playing = true;
     interval= setInterval(increaseTime, 1000);
     changeSpawnRate();
@@ -57,13 +131,10 @@ function increaseTime(){
     seconds= seconds < 10 ? "0" + seconds : seconds;
     minutes= minutes < 10 ? "0" + minutes : minutes;
 
-    setTime(`${minutes}:${seconds}`);
-
+    //set time
+    timeEl.innerHTML = `${minutes}:${seconds}`;
 }
 
-function setTime(time){
-    timeEl.innerHTML = time;
-}
 
 function createRandomCircle(){
     if(!playing){
@@ -85,7 +156,6 @@ function createRandomCircle(){
  
 
     //add new circle when old one disappears
-
     circle.addEventListener("animationend", () =>{
         circle.remove();
         //increase misses also when circle scale becomes 0 and user didnt click in time
@@ -95,26 +165,12 @@ function createRandomCircle(){
     
 }
 
-//event on circle click
-board.addEventListener("click", (e) =>{
-    if(e.target.classList.contains("circle")){
-        //increase hits by one and remove circle
-        hits++;
-        e.target.remove();
-    }else{
-        //missed circle
-        missed++;
-    }
-
-    //update hits on stats
-    hitsEl.innerHTML = hits;
-    calculateAccuracy();
-});
 
 function finishGame(){
     playing = false;
     clearInterval(interval);
     clearInterval(circleInterval);
+    clearInterval(spawnInterval);
     board.innerHTML = "";
     screens[1].classList.add("up");
     hitsEl.innerHTML = 0;
@@ -136,7 +192,7 @@ function finishGame(){
 
     if(minutes > highscoreMinutes || minutes == highscoreMinutes && seconds > highscoreSeconds){
         highscoreEl.innerHTML = timeOver.innerHTML;
-        localStorage.clear();
+        localStorage.clear("myHighscore");
         localStorage.setItem("myHighscore", highscoreEl.innerHTML);
     }
 
@@ -164,11 +220,15 @@ function getRandomNumber(min, max){
     return Math.round(Math.random()* (max-min) + min);
 }
 
-restartBtn.addEventListener("click", restartGame);
+
 
 function restartGame(){
     screens[1].classList.remove("up");
-    screens[2].classList.remove("up");
+    reset();
+    startGame();
+}
+
+function reset(){
     time=0;
     hits=0;
     missed=0;
@@ -176,21 +236,7 @@ function restartGame(){
     playing=false;
     health=3;
     healthEl.innerHTML = health;
-    startGame();
 }
 
-fullScreenBtn.addEventListener("click", () => {
-    if(elem.requestFullscreen){
-        elem.requestFullscreen();
-    }
-    //hide fullscreen button
-    fullScreenBtn.style.display = "none";
-});
 
-let elem = document.documentElement;
 
-document.addEventListener("fullscreenchange", () => {
-    if(!document.fullscreenElement){
-        fullScreenBtn.style.display = "block";
-    }
-})
