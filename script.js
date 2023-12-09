@@ -206,7 +206,6 @@ function addMissed(){
     if(health == 1){
         finishGame();
     }else{
-        missed++;
         health--;
         healthEl.innerHTML = health;
     }
