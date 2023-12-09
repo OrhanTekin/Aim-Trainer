@@ -98,7 +98,9 @@ function setup(){
     //load audio and settings
     audio = new Audio('hitSound.mp3');
     toogleMute = localStorage.getItem("toogleMute");
-
+    if(!toogleMute){
+        speaker.classList.add("mute");
+    }
 
     startGame();
 }
