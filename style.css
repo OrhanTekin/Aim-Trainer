@@ -91,11 +91,13 @@ h1{
     align-items: center;
     justify-content: center;
     position: relative;
-    width: 100%;
+    width: 50%;
+    height: 50%;
     flex:1;
     background-color: #031e2e;
     overflow:hidden;
-    cursor: url("cursor.png") 8.5 8.5, auto;
+    cursor: url("cursor2.png") 4.5 4.5, auto;
+    /*cursor: url("cursor.png") 8.5 8.5, auto; */
 }
 
 .options{
@@ -145,6 +147,14 @@ h1{
 }
 
 /*Responsiveness */
+
+.btn.speaker::before{
+    content: url("speaker.png");
+}
+
+.btn.speaker.mute::before{
+    content: url("speakerMute.png");
+}
 
 
 @media (max-width:768px){
